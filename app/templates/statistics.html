@@ -17,6 +17,7 @@
                 <thead>
                 <tr>
                     <th>ФИО</th>
+                    <th>Новое</th>
                     <th>В работе</th>
                     <th>Отложено</th>
                     <th>Завершено</th>
@@ -72,6 +73,7 @@
             processing: true,
             columns: [
                 {data: 'fio', orderable: false, searchable: false},
+                {data: 'Новое', orderable: false, defaultContent: 0},
                 {data: 'В работе', orderable: false, defaultContent: 0},
                 {data: 'Отложено', orderable: false, defaultContent: 0},
                 {data: 'Завершено', orderable: false, defaultContent: 0},
