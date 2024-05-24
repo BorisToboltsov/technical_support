@@ -47,6 +47,19 @@ class Status(db.Model):
         return "<{}>".format(self.name)
 
 
+class Branch(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+    is_active: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(20), index=True)
+    user_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(
+        back_populates="branch", foreign_keys="[UserRequest.branch_id]"
+    )
+
+    def __repr__(self):
+        return "<{}>".format(self.name)
+
+
 class UserRequest(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
@@ -55,7 +68,6 @@ class UserRequest(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     user: so.Mapped[User] = so.relationship(back_populates="user_request", foreign_keys=[user_id])
     theme: so.Mapped[str] = so.mapped_column(sa.String(50), nullable=True)
-    branch_name: so.Mapped[str] = so.mapped_column(sa.String(50), nullable=True)
     cabinet_number: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
     text: so.Mapped[str] = so.mapped_column(sa.Text)
     executor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True, default=None, nullable=True)
@@ -64,6 +76,8 @@ class UserRequest(db.Model):
     comment: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="user_request")
     history: so.WriteOnlyMapped["UserRequestHistory"] = so.relationship(back_populates="user_request")
     status: so.Mapped[Status] = so.relationship(back_populates="user_request")
+    branch_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Branch.id), index=True)
+    branch: so.Mapped[Branch] = so.relationship(back_populates="user_request")
 
     def to_dict(self):
         try:
@@ -76,7 +90,7 @@ class UserRequest(db.Model):
             "closed_at": self.closed_at,
             "user_id": self.user.id,
             "cabinet_number": self.cabinet_number,
-            "branch_name": self.branch_name,
+            "branch_name": self.branch.name,
             "status_name": self.status.name,
             "executor_name": executor_name,
             "theme": self.theme,

@@ -7,8 +7,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import NoResultFound
 
 from app import app, db
-from app.forms import SelectUserForm, SelectStatusForm, PostForm
-from app.models import User, Status, UserRequest, UserRequestHistory, Comment
+from app.forms import SelectUserForm, SelectStatusForm, PostForm, AppealTextForm
+from app.models import User, Status, UserRequest, UserRequestHistory, Comment, Branch
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -288,24 +288,35 @@ def appeal_handler(appeal_id):
     )
 
 
-@app.route("/")
-@app.route("/index")
+@app.route("/", methods=["GET", "POST"])
+@app.route("/index", methods=["GET", "POST"])
 @login_required
 def index():
-    # users_query = (sa.select(User.name, Status.name, sa.func.count()).
-    #                join(UserRequest, User.id == UserRequest.executor_id).
-    #                join(Status, Status.id == UserRequest.status_id).
-    #                group_by(User.name, Status.name))
-    # users_query_list = db.session.execute(users_query).all()
-    #
-    # data_list = []
-    # for user_query in users_query_list:
-    #     k = True
-    #     for data in data_list:
-    #         if user_query[0] == data['fio']:
-    #             data.update({user_query[1]: user_query[2]})
-    #             k = False
-    #     if k:
-    #         data_list.append({'fio': user_query[0], user_query[1]: user_query[2]})
+    form = AppealTextForm()
+    obj_list = Branch.query.all()
+    branch_list = [branch.name for branch in obj_list]
+    form.set_choices(branch_list)
 
-    return render_template("index.html")
+    if form.validate_on_submit() and form.post.data:
+        query = sa.select(Status).where(sa.func.lower(Status.name) == "Новое".lower())
+        status = db.session.execute(query).one()[0]
+        appeal = UserRequest(
+            text=form.post.data,
+            user=current_user,
+            status=status,
+            cabinet_number=form.cabinet_number.data,
+            channel='Сайт',
+            theme='Обращение'
+        )
+
+        new_branch = None
+        for branch in obj_list:
+            if branch.name == form.select.data:
+                new_branch = branch
+        appeal.branch = new_branch
+
+        db.session.add(appeal)
+        db.session.commit()
+        return redirect("/index")
+    return render_template("index.html",
+                           form=form,)
