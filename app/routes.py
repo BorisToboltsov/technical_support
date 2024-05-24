@@ -85,8 +85,6 @@ def data():
 
     # search filter
     application_number = request.args.get('application_number')
-    order_number = request.args.get('order_number')
-    user_number = request.args.get('user_number')
     user_fio = request.args.get('user_fio')
     status = request.args.get('status')
     user = request.args.get('user')
@@ -101,8 +99,7 @@ def data():
     if user == 'Все':
         pass
     else:
-        print(user)
-        query = query.join(User, onclause=(User.id == UserRequest.executor_id)).filter(User.name == user)
+        query = query.join(User, onclause=(User.id == UserRequest.executor_id)).filter(sa.func.lower(User.name) == user.lower())
 
     if application_number:
         try:
