@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "technical-support"
+version = "0.1.0"
+description = ""
+authors = ["BorisToboltsov <b.toboltsov@vcore.su>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Flask = "^3.0.3"
+dotenv-python = "^0.0.1"
+flask-login = "^0.6.3"
+flask-migrate = "^4.0.7"
+flask-wtf = "^1.2.1"
+black = "^24.4.2"
+isort = "^5.13.2"
+flake8 = "^7.0.0"
+psycopg2 = "^2.9.9"
+sentry-sdk = "0.10.2"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
