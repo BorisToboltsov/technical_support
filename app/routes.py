@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 
 import sqlalchemy as sa
 from flask import redirect, render_template, request, url_for
@@ -6,8 +7,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import NoResultFound
 
 from app import app, db
-from app.forms import SelectUserForm, SelectStatusForm
-from app.models import User, Status, UserRequest
+from app.forms import SelectUserForm, SelectStatusForm, PostForm
+from app.models import User, Status, UserRequest, UserRequestHistory, Comment
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -211,3 +212,79 @@ def statistics_data():
         "recordsTotal": len(data_list),
         "draw": request.args.get("draw", type=int),
     }
+
+
+@app.route("/appeal/id=<appeal_id>", methods=["GET", "POST"])
+@login_required
+def appeal(appeal_id):
+    print(1)
+    appeal = db.first_or_404(
+        sa.select(UserRequest).where(UserRequest.id == int(appeal_id))
+    )
+    if appeal.executor is None:
+        appeal.executor = current_user
+        query = sa.select(Status).where(Status.name == "В работе")
+        status = db.session.execute(query).one()[0]
+        appeal.status = status
+        history = UserRequestHistory(
+            executor_id=current_user.id, status=status, user_request=appeal
+        )
+        db.session.add(history)
+        db.session.commit()
+
+    obj_list = Status.query.all()
+    status_list = [status.name for status in obj_list]
+    status_form = SelectStatusForm()
+    status_form.set_choices(status_list)
+    status_form.select.default = appeal.status.name
+
+    if status_form.is_submitted() and status_form.select.data:
+        new_status = None
+        for status in obj_list:
+            if status.name == status_form.select.data:
+                new_status = status
+        appeal.status = new_status
+        if new_status.name == 'Завершено':
+            appeal.closed_at = datetime.now()
+            appeal.executor_id = current_user.id
+        db.session.add(appeal)
+
+        history = UserRequestHistory(
+            executor_id=current_user.id, status=new_status, user_request=appeal
+        )
+        db.session.add(history)
+
+        db.session.commit()
+        return redirect(f"/appeal/id={appeal_id}")
+    status_form.process()
+
+    form = PostForm()
+    if form.validate_on_submit() and form.post.data:
+        post = Comment(
+            text=form.post.data,
+            executor_id=current_user.id,
+            user_request_id=appeal.id,
+        )
+        db.session.add(post)
+        db.session.commit()
+        return redirect(f"/appeal/id={appeal_id}")
+
+    query = Comment.query
+    comments = query.filter(Comment.user_request.has(id=appeal.id)).order_by(
+        Comment.created_at.desc()
+    )
+
+    history_query = UserRequestHistory.query
+    history_list = history_query.filter(
+        UserRequestHistory.user_request.has(id=appeal.id)
+    ).order_by(UserRequestHistory.created_at.desc())
+
+    return render_template(
+        "appeal.html",
+        appeal=appeal,
+        comments=comments,
+        form=form,
+        status_form=status_form,
+        status_list=status_list,
+        history_list=history_list,
+    )

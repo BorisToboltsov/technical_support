@@ -19,6 +19,7 @@ class User(UserMixin, db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
     telegram_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
+    phone: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
     user_request_history: so.WriteOnlyMapped["UserRequestHistory"] = so.relationship(back_populates="executor")
     user_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(
         back_populates="user", foreign_keys="[UserRequest.user_id]"

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <br>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="card-header">
+                Номер заявки: {{ appeal.id }}
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Дата создания: {{ appeal.created_at.strftime('%d.%m.%Y %H:%M') }}</li>
+                <li class="list-group-item">Дата закрытия: {{appeal.closed_at.strftime('%d.%m.%Y %H:%M') if
+                    appeal.closed_at else 'Не закрыта'}}
+                </li>
+                <li class="list-group-item">Статус: {{ appeal.status.name }}</li>
+                <li class="list-group-item">Канал: {{ appeal.channel }}</li>
+                <li class="list-group-item">Исполнитель: {{ appeal.executor.name }}</li>
+            </ul>
+            <div class="card-header">
+                Филиал: {{ appeal.branch_name}}
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Кабинет: {{ appeal.cabinet_number }}</li>
+            </ul>
+            <div class="card-header">
+                ФИО: {{ appeal.user.name if appeal.user.name else 'Не определено' }}
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Телефон: {{ appeal.user.phone if appeal.user.phone else 'Не указан' }}</li>
+            </ul>
+            <form method="post">
+                <div class="card-header">
+                    {{ status_form.select.label }}
+                </div>
+                {{ status_form.select(class="form-select") }}
+                <br>
+                {{ status_form.change(class="btn btn-outline-secondary") }}
+            </form>
+        </div>
+        <div class="col-sm-3">
+            <div class="card-header">
+                Тема обращения: {{ appeal.theme if appeal.theme else 'Не указана' }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Текст обращения:</h5>
+                <p class="card-text">{{ appeal.text }}</p>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card-header">
+                Комментарии:
+            </div>
+            <div class="card-header">
+                {{ form.post.label() }}
+                <br>
+                <div>
+                    <form action="" method="post">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form.post(class='form-control', cols=32, rows=4) }}<br>
+                        </div>
+                        <p>{{ form.add(class="btn btn-primary") }}</p>
+                    </form>
+                </div>
+            </div>
+
+            <br>
+            {% for comment in comments %}
+            <h6 class="card-title">
+                {{comment.created_at.strftime('%d.%m.%Y %H:%M')}} {{comment.executor.name}}
+            </h6>
+            <div>
+                {{comment.text}}
+            </div>
+            <hr>
+            {% endfor %}
+
+        </div>
+        <div class="col-sm-3">
+            <div class="card-header">
+                История изменений:
+            </div>
+            <br>
+            {% for history in history_list %}
+            <h6 class="card-title">
+                {{history.created_at.strftime('%d.%m.%Y %H:%M')}} {{history.executor.name}}
+            </h6>
+            <div>
+                Статус: {{history.status.name}}
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
