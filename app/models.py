@@ -25,10 +25,10 @@ class User(UserMixin, db.Model):
         so.relationship(back_populates="executor")
     )
     user_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(
-        back_populates="user"
+        back_populates="user", foreign_keys="[UserRequest.user_id]"
     )
     executor_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(
-        back_populates="executor"
+        back_populates="executor", foreign_keys="[UserRequest.executor_id]"
     )
     comment: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="executor")
 
@@ -44,12 +44,11 @@ class Status(db.Model):
     is_active: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(20), index=True)
     user_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(
-        back_populates="status"
+        back_populates="status", foreign_keys="[UserRequest.status_id]"
     )
     user_request_history: so.WriteOnlyMapped["UserRequestHistory"] = (
         so.relationship(back_populates="status")
     )
-    executor_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(back_populates="executor")
 
     def __repr__(self):
         return "<{}>".format(self.name)
@@ -67,7 +66,7 @@ class UserRequest(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(
         sa.ForeignKey(User.id), index=True
     )
-    user: so.Mapped[User] = so.relationship(back_populates="user_request", foreign_keys=[user_id,])
+    user: so.Mapped[User] = so.relationship(back_populates="user_request", foreign_keys=[user_id])
     theme: so.Mapped[str] = so.mapped_column(sa.String(50), nullable=True)
     branch_name: so.Mapped[str] = so.mapped_column(sa.String(50), nullable=True)
     cabinet_number: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
@@ -75,7 +74,7 @@ class UserRequest(db.Model):
     executor_id: so.Mapped[int] = so.mapped_column(
         sa.ForeignKey(User.id), index=True, default=None, nullable=True
     )
-    executor: so.Mapped[User] = so.relationship(back_populates="executor_request", foreign_keys=[executor_id,])
+    executor: so.Mapped[User] = so.relationship(back_populates="executor_request", foreign_keys=[executor_id])
     channel: so.Mapped[str] = so.mapped_column(
         sa.String(60), comment="Канал откуда пришло обращение"
     )
