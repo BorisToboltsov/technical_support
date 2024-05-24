@@ -216,8 +216,7 @@ def statistics_data():
 
 @app.route("/appeal/id=<appeal_id>", methods=["GET", "POST"])
 @login_required
-def appeal(appeal_id):
-    print(1)
+def appeal_handler(appeal_id):
     appeal = db.first_or_404(
         sa.select(UserRequest).where(UserRequest.id == int(appeal_id))
     )
