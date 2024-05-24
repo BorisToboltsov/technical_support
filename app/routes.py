@@ -95,7 +95,6 @@ def data():
         pass
     else:
         query = query.join(Status).filter(sa.func.lower(Status.name) == status.lower())
-
     if user == 'Все':
         pass
     else:
