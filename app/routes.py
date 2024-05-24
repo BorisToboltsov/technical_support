@@ -1,28 +1,27 @@
 import base64
 
 import sqlalchemy as sa
-from app.models import User
-
 from flask import redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import NoResultFound
 
 from app import app, db
+from app.models import User
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     parameters = request.full_path
-    a = parameters.index('?')
+    a = parameters.index("?")
     parameters = parameters[a:]
-    parameters = base64.b64decode(parameters + '==').decode("utf-8")
+    parameters = base64.b64decode(parameters + "==").decode("utf-8")
     if not parameters:
         return render_template("401.html"), 401
-    parameters = parameters.split('&')
+    parameters = parameters.split("&")
 
     parameters_dict = {}
     for parameter in parameters:
-        parameter = parameter.split('=')
+        parameter = parameter.split("=")
         parameters_dict[parameter[0]] = parameter[1]
 
     user_id = int(parameters_dict.get("user_id"))
@@ -48,6 +47,6 @@ def login():
     return redirect(url_for("index"))
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return 'Hello world'
+    return "Hello world"

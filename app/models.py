@@ -14,16 +14,12 @@ def load_user(id):
 
 class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    created_at: so.Mapped[datetime] = so.mapped_column(
-        index=True, default=lambda: datetime.now(timezone.utc)
-    )
+    created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     is_active: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
     user_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
     telegram_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
-    user_request_history: so.WriteOnlyMapped["UserRequestHistory"] = (
-        so.relationship(back_populates="executor")
-    )
+    user_request_history: so.WriteOnlyMapped["UserRequestHistory"] = so.relationship(back_populates="executor")
     user_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(
         back_populates="user", foreign_keys="[UserRequest.user_id]"
     )
@@ -38,17 +34,13 @@ class User(UserMixin, db.Model):
 
 class Status(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    created_at: so.Mapped[datetime] = so.mapped_column(
-        index=True, default=lambda: datetime.now(timezone.utc)
-    )
+    created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     is_active: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(20), index=True)
     user_request: so.WriteOnlyMapped["UserRequest"] = so.relationship(
         back_populates="status", foreign_keys="[UserRequest.status_id]"
     )
-    user_request_history: so.WriteOnlyMapped["UserRequestHistory"] = (
-        so.relationship(back_populates="status")
-    )
+    user_request_history: so.WriteOnlyMapped["UserRequestHistory"] = so.relationship(back_populates="status")
 
     def __repr__(self):
         return "<{}>".format(self.name)
@@ -56,34 +48,20 @@ class Status(db.Model):
 
 class UserRequest(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    created_at: so.Mapped[datetime] = so.mapped_column(
-        index=True, default=lambda: datetime.now(timezone.utc)
-    )
-    closed_at: so.Mapped[datetime] = so.mapped_column(
-        sa.DateTime, index=True, nullable=True
-    )
+    created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+    closed_at: so.Mapped[datetime] = so.mapped_column(sa.DateTime, index=True, nullable=True)
     status_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Status.id), index=True)
-    user_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey(User.id), index=True
-    )
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     user: so.Mapped[User] = so.relationship(back_populates="user_request", foreign_keys=[user_id])
     theme: so.Mapped[str] = so.mapped_column(sa.String(50), nullable=True)
     branch_name: so.Mapped[str] = so.mapped_column(sa.String(50), nullable=True)
     cabinet_number: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
     text: so.Mapped[str] = so.mapped_column(sa.Text)
-    executor_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey(User.id), index=True, default=None, nullable=True
-    )
+    executor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True, default=None, nullable=True)
     executor: so.Mapped[User] = so.relationship(back_populates="executor_request", foreign_keys=[executor_id])
-    channel: so.Mapped[str] = so.mapped_column(
-        sa.String(60), comment="Канал откуда пришло обращение"
-    )
-    comment: so.WriteOnlyMapped["Comment"] = so.relationship(
-        back_populates="user_request"
-    )
-    history: so.WriteOnlyMapped["UserRequestHistory"] = so.relationship(
-        back_populates="user_request"
-    )
+    channel: so.Mapped[str] = so.mapped_column(sa.String(60), comment="Канал откуда пришло обращение")
+    comment: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="user_request")
+    history: so.WriteOnlyMapped["UserRequestHistory"] = so.relationship(back_populates="user_request")
     status: so.Mapped[Status] = so.relationship(back_populates="user_request")
 
     def to_dict(self):
@@ -110,18 +88,12 @@ class UserRequest(db.Model):
 
 class Comment(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    created_at: so.Mapped[datetime] = so.mapped_column(
-        index=True, default=lambda: datetime.now(timezone.utc)
-    )
+    created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     text: so.Mapped[str] = so.mapped_column(sa.Text, nullable=False)
     executor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True)
     executor: so.Mapped[User] = so.relationship(back_populates="comment")
-    user_request_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey(UserRequest.id), index=True
-    )
-    user_request: so.Mapped[UserRequest] = so.relationship(
-        back_populates="comment"
-    )
+    user_request_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(UserRequest.id), index=True)
+    user_request: so.Mapped[UserRequest] = so.relationship(back_populates="comment")
 
     def __repr__(self):
         return "<{}>".format(self.executor)
@@ -129,23 +101,13 @@ class Comment(db.Model):
 
 class UserRequestHistory(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    created_at: so.Mapped[datetime] = so.mapped_column(
-        index=True, default=lambda: datetime.now(timezone.utc)
-    )
+    created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     executor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), index=True, default=None, nullable=True)
-    executor: so.Mapped[User] = so.relationship(
-        back_populates="user_request_history"
-    )
+    executor: so.Mapped[User] = so.relationship(back_populates="user_request_history")
     status_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Status.id), index=True)
-    user_request_id: so.Mapped[int] = so.mapped_column(
-        sa.ForeignKey(UserRequest.id), index=True
-    )
-    user_request: so.Mapped[UserRequest] = so.relationship(
-        back_populates="history"
-    )
-    status: so.Mapped[Status] = so.relationship(
-        back_populates="user_request_history"
-    )
+    user_request_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(UserRequest.id), index=True)
+    user_request: so.Mapped[UserRequest] = so.relationship(back_populates="history")
+    status: so.Mapped[Status] = so.relationship(back_populates="user_request_history")
 
     def __repr__(self):
         return "<{}>".format(self.status_id)
