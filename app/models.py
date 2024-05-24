@@ -79,7 +79,7 @@ class UserRequest(db.Model):
             "status_name": self.status.name,
             "executor_name": executor_name,
             "theme": self.theme,
-            "fio": self.user.fio,
+            "fio": self.user.name,
         }
 
     def __repr__(self):

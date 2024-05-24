@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% block content %}
+<meta charset="UTF-8" http-equiv="refresh" content="1000">
+<div class="container">
+    <div class="row">
+        <div class="col-80">
+            <table id="data" class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>№</th>
+                    <th>№ заявки</th>
+                    <th>Дата обращения</th>
+                    <th>ФИО</th>
+                    <th>Номер комнаты</th>
+                    <th>Филиал</th>
+                    <th>Статус</th>
+                    <th>Исполнитель</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="col-20">
+            <div>
+                <div class="card-header">
+                    № Заявки
+                </div>
+                <input type="text" id="application_number">
+            </div>
+            <div>
+                <div class="card-header">
+                    ФИО Участника
+                </div>
+                <input type="text" id="user_fio">
+            </div>
+            <div>
+                <div class="card-header">
+                    {{ status_form.select.label }}
+                </div>
+                {{ status_form.select(class="form-select", id="status") }}
+            </div>
+            <div>
+                <div class="card-header">
+                    {{ user_form.select.label }}
+                </div>
+                {{ user_form.select(class="form-select", id="user") }}
+            </div>
+            <div>
+                <div class="card-header">
+                    Дата от:
+                </div>
+                <div>
+                    <input type="text" id="datepicker_min" name="datepicker_min">
+                </div>
+            </div>
+            <div>
+                <div class="card-header">
+                    Дата до:
+                </div>
+                <input type="text" id="datepicker_max" name="datepicker_max">
+            </div>
+            <button id="user-filter-btn" class="btn btn-outline-secondary">Применить фильтры</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    input {
+        flex: 1;
+        width: 100%;
+    }
+
+    #user-filter-btn {
+        background-color: #0b5ed7;
+        color: #fff;
+        border-color: #0d6efd;
+    }
+
+    .container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    table {
+        overflow: hidden;
+    }
+
+    td {
+        cursor: pointer;
+    }
+
+    .col-80 {
+        flex: 0 0 80%;
+        max-width: 80%;
+    }
+
+    .col-20 {
+        align-self: start;
+        display: grid;
+        flex: 0 0 20%;
+        max-width: 20%;
+        gap: 10px;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<script>
+    $(document).ready(function () {
+        let currentData = [];
+
+        // Create Table
+        var table = $('#data').DataTable({
+            searching: false,
+            pageLength: 100,
+            language: {
+                emptyTable: "Нет данных для отображения",
+                zeroRecords: "Нет подходящих записей",
+                search: "Поиск:",
+                lengthMenu: "Показать _MENU_ записей",
+                info: "Показано с _START_ по _END_ (Всего _TOTAL_ записей)",
+                infoFiltered: "",
+                infoEmpty: "Записей нет",
+                paginate: {
+                    previous: "Назад",
+                    next: "Вперед",
+                },
+            },
+            // Изменение данных в колонке, форматирование даты
+            columnDefs: [{
+                targets: 2, // Номер колонки, в которой находятся даты
+                render: function (data, type, row) {
+                    return moment(data).format('DD.MM.YYYY'); // Форматируем дату
+                }
+            },
+                {targets: 1, width: "25px"},
+                {targets: 2, width: "25px"},
+                {targets: 3, width: "300px"},
+                {targets: 4, width: "40px"},
+                {targets: 0, 'visible': false,}],  // Скрыть 0 столбец
+            ajax: {
+                url: '/api/data',
+                "data": function (d) {
+                    // Проставляем здесь все идентификаторы полей с которых нужно получать значения
+                    d.application_number = $('#application_number').val();
+                    d.user_number = $('#user_number').val();
+                    d.user_fio = $('#user_fio').val();
+                    d.status = $('#status').val();
+                    d.user = $('#user').val();
+                    d.datepicker_min = $('#datepicker_min').val();
+                    d.datepicker_max = $('#datepicker_max').val();
+                    // etc
+                },
+            },
+            initComplete: function (settings, json) {
+                currentData = table.rows().data().toArray(); // Получение текущих данных таблицы
+            },
+            serverSide: true,
+            processing: true,
+            columns: [
+                {data: 'number', orderable: false, searchable: false},
+                {data: 'id'},
+                {data: 'created_at', orderable: false},
+                {data: 'fio', orderable: false},
+                {data: 'cabinet_number', orderable: false},
+                {data: 'branch_name', orderable: false},
+                {data: 'status_name', orderable: false},
+                {data: 'executor_name', orderable: false},
+            ],
+        });
+
+        // Автообновление таблицы без перезагрузки всей страницы раз в 10 секунд
+        setInterval(function () {
+            var newData = table.ajax.json().data;
+            table.ajax.reload();
+
+            let newTitle = ''
+            if (newData.length === 0) {
+                newTitle = 'Техническая поддержка';
+            } else {
+                newTitle = '(' + newData.length + ') ' + 'Техническая поддержка';
+            }
+
+            // Сравните текущие данные с новыми данными
+            if (JSON.stringify(currentData) === JSON.stringify(newData)) {
+                // Данные идентичны
+                document.title = newTitle
+            } else {
+                // Данные различаются
+                document.title = newTitle
+            }
+        }, 60000);
+
+        $('#user-filter-btn').on('click', function () {
+            // Проставляем здесь все идентификаторы полей с которых нужно получать значения
+            var application_number = $('#application_number').val();
+            var user_number = $('#user_number').val();
+            var user_fio = $('#user_fio').val();
+            var status = $('#status').val();
+            var user = $('#user').val();
+            var datepicker_min = $('#datepicker_min').val();
+            var datepicker_max = $('#datepicker_max').val();
+
+            table.draw();
+        });
+
+
+        $.datepicker.regional['ru'] = {
+            closeText: 'Закрыть',
+            prevText: 'Предыдущий',
+            nextText: 'Следующий',
+            currentText: 'Сегодня',
+            monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+            monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+            dayNames: ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],
+            dayNamesShort: ['вск', 'пнд', 'втр', 'срд', 'чтв', 'птн', 'сбт'],
+            dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+            weekHeader: 'Не',
+            dateFormat: 'dd.mm.yy',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['ru']);
+        $(function () {
+            $("#datepicker_min,#datepicker_max").datepicker(
+                {
+                    isRTL: false,
+                    dateFormat: 'yy-mm-dd',
+                    autoclose: true,
+                    showOtherMonths: true,
+                    onSelect: function () {
+                        $("#user-filter-btn").click();
+                    },
+                }
+            );
+        });
+
+        // Click row
+        $('#data').on("click", "td", function (e) {
+            var rowIdx = table.row(this).index();
+            var sData = table.cells({row: rowIdx, column: 1}).data()[0];
+            if (sData) {
+                window.open('./appeal/id=' + sData, '_blank');  // Открываем обращение в новом окне
+                location.reload();  // Обновление текущей вкладки
+            }
+        });
+
+        // Клик при нажатии Enter
+        $("#application_number,#user_number,#status,#user,#user_fio").keyup(function (event) {
+            if (event.keyCode === 13) {
+                $("#user-filter-btn").click();
+            }
+        });
+
+
+    });
+</script>
+{% endblock %}
