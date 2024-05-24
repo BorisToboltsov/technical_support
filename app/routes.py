@@ -55,9 +55,8 @@ def logout():
     return redirect(url_for("index"))
 
 
-@app.route("/")
-@app.route("/index")
-def index():
+@app.route("/appeal_list")
+def appeal_list():
     obj_status_list = Status.query.all()
     status_list = [status.name for status in obj_status_list]
     status_list.append('Все')
@@ -75,7 +74,7 @@ def index():
     user_form.select.default = 'Все'
     user_form.process()
 
-    return render_template("index.html", title="Техническая поддержка",
+    return render_template("appeal_list.html", title="Техническая поддержка",
                            status_form=status_form,
                            user_form=user_form)
 
@@ -287,3 +286,26 @@ def appeal_handler(appeal_id):
         status_list=status_list,
         history_list=history_list,
     )
+
+
+@app.route("/")
+@app.route("/index")
+@login_required
+def index():
+    # users_query = (sa.select(User.name, Status.name, sa.func.count()).
+    #                join(UserRequest, User.id == UserRequest.executor_id).
+    #                join(Status, Status.id == UserRequest.status_id).
+    #                group_by(User.name, Status.name))
+    # users_query_list = db.session.execute(users_query).all()
+    #
+    # data_list = []
+    # for user_query in users_query_list:
+    #     k = True
+    #     for data in data_list:
+    #         if user_query[0] == data['fio']:
+    #             data.update({user_query[1]: user_query[2]})
+    #             k = False
+    #     if k:
+    #         data_list.append({'fio': user_query[0], user_query[1]: user_query[2]})
+
+    return render_template("index.html")
