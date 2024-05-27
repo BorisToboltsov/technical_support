@@ -50,12 +50,14 @@ def login():
 
 
 @app.route("/technical/logout")
+@login_required
 def logout():
     logout_user()
     return redirect(url_for("index"))
 
 
 @app.route("/technical/appeal_list")
+@login_required
 def appeal_list():
     obj_status_list = Status.query.all()
     status_list = [status.name for status in obj_status_list]
@@ -80,6 +82,7 @@ def appeal_list():
 
 
 @app.route("/technical/api/data")
+@login_required
 def data():
     query = UserRequest.query
 
