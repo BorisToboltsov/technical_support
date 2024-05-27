@@ -33,9 +33,17 @@
                 <div class="card-header">
                     {{ status_form.select.label }}
                 </div>
-                {{ status_form.select(class="form-select") }}
+                {% if current_user.is_edited %}
+                {{ status_form.select(class="form-select", disabled=False) }}
+                {% else %}
+                {{ status_form.select(class="form-select", disabled=True) }}
+                {% endif %}
                 <br>
-                {{ status_form.change(class="btn btn-outline-secondary") }}
+                {% if current_user.is_edited %}
+                {{ status_form.change(class="btn btn-outline-secondary", disabled=False) }}
+                {% else %}
+                {{ status_form.change(class="btn btn-outline-secondary", disabled=True) }}
+                {% endif %}
             </form>
         </div>
         <div class="col-sm-3">
@@ -58,9 +66,19 @@
                     <form action="" method="post">
                         {{ form.hidden_tag() }}
                         <div class="mb-3">
-                            {{ form.post(class='form-control', cols=32, rows=4) }}<br>
+                            {% if current_user.is_edited %}
+                            {{ form.post(class='form-control', cols=32, rows=4, disabled=False) }}<br>
+                            {% else %}
+                            {{ form.post(class='form-control', cols=32, rows=4, disabled=True) }}<br>
+                            {% endif %}
                         </div>
-                        <p>{{ form.add(class="btn btn-primary") }}</p>
+                        <p>
+                            {% if current_user.is_edited %}
+                            {{ form.add(class="btn btn-primary", disabled=False) }}
+                            {% else %}
+                            {{ form.add(class="btn btn-primary", disabled=True) }}
+                            {% endif %}
+                        </p>
                     </form>
                 </div>
             </div>

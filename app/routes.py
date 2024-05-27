@@ -221,7 +221,7 @@ def appeal_handler(appeal_id):
     appeal = db.first_or_404(
         sa.select(UserRequest).where(UserRequest.id == int(appeal_id))
     )
-    if appeal.executor is None:
+    if appeal.executor is None and current_user.is_edited:
         appeal.executor = current_user
         query = sa.select(Status).where(Status.name == "В работе")
         status = db.session.execute(query).one()[0]
@@ -287,6 +287,7 @@ def appeal_handler(appeal_id):
         status_form=status_form,
         status_list=status_list,
         history_list=history_list,
+        current_user=current_user,
     )
 
 

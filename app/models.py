@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     created_at: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
     is_active: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
+    is_edited: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False, nullable=True, )
     user_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
     telegram_id: so.Mapped[int] = so.mapped_column(sa.BigInteger, nullable=True)
