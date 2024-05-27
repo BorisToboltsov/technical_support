@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-    <div class="card-header">
-        {{ form.post.label() }}
-        <br>
-        <div>
-            {% if message %}
-            <p>{{ message }}</p>
-            {% endif %}
-            <form action="" method="post">
-                <br>
+    <div class="wrapper">
+        <div class="col-40">
+            <img class="img-responsive" src="{{ url_for('static', filename='main_image.jpg') }}"/>
+        </div>
+        <div class="col-60">
+
+            <form action="" method="POST">
+                {{ form.csrf_token }}
                 <div class="mb-3">
                     <label for="select_branch" class="form-label">{{ form.select.label }}</label>
                     {{ form.select(class="form-select",id="select_branch") }}
@@ -27,4 +26,32 @@
         </div>
     </div>
 </div>
+<style>
+    .container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .wrapper {
+        width: 100%;
+        overflow: hidden; /* Контейнер clearfix для обеспечения правильного отображения блоков */
+    }
+    .col-40 {
+        float: left;
+        width: 512px;
+    }
+    .col-60 {
+        float: left;
+        width: calc(100% - 512px);
+        min-height: 512px;
+        padding: 25px;
+    }
+    .btn {
+        width: 100%;
+    }
+    @media (max-width: 768px) {
+        .col-40, .col-60 {
+            width: 100%; /* Оба блока займут по 100% ширины при ширине экрана до 768px */
+        }
+    }
+</style>
 {% endblock %}

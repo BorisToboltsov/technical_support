@@ -48,6 +48,5 @@ class AppealTextForm(FlaskForm):
     cabinet_number = IntegerField("№ кабинет", validators=[DataRequired(), NumberRange(min=1, max=2000)])
     add = SubmitField("Добавить")
 
-
     def set_choices(self, select_list):
         self.select.choices = select_list
