@@ -11,7 +11,7 @@ from app.forms import SelectUserForm, SelectStatusForm, PostForm, AppealTextForm
 from app.models import User, Status, UserRequest, UserRequestHistory, Comment, Branch
 
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/technical/login", methods=["GET", "POST"])
 def login():
     parameters = request.full_path
     a = parameters.index("?")
@@ -49,13 +49,13 @@ def login():
     return redirect(url_for("index"))
 
 
-@app.route("/logout")
+@app.route("/technical/logout")
 def logout():
     logout_user()
     return redirect(url_for("index"))
 
 
-@app.route("/appeal_list")
+@app.route("/technical/appeal_list")
 def appeal_list():
     obj_status_list = Status.query.all()
     status_list = [status.name for status in obj_status_list]
@@ -79,7 +79,7 @@ def appeal_list():
                            user_form=user_form)
 
 
-@app.route("/api/data")
+@app.route("/technical/api/data")
 def data():
     query = UserRequest.query
 
@@ -171,7 +171,7 @@ def data():
     }
 
 
-@app.route("/statistics")
+@app.route("/technical/statistics")
 @login_required
 def statistics():
     query = UserRequest.query
@@ -188,7 +188,7 @@ def statistics():
                            total_user_request=len(total_user_request))
 
 
-@app.route("/api/statistics")
+@app.route("/technical/api/statistics")
 @login_required
 def statistics_data():
     users_query = (sa.select(User.name, Status.name, sa.func.count()).
@@ -215,7 +215,7 @@ def statistics_data():
     }
 
 
-@app.route("/appeal/id=<appeal_id>", methods=["GET", "POST"])
+@app.route("/technical/appeal/id=<appeal_id>", methods=["GET", "POST"])
 @login_required
 def appeal_handler(appeal_id):
     appeal = db.first_or_404(
@@ -291,8 +291,8 @@ def appeal_handler(appeal_id):
     )
 
 
-@app.route("/", methods=["GET", "POST"])
-@app.route("/index", methods=["GET", "POST"])
+@app.route("/technical/", methods=["GET", "POST"])
+@app.route("/technical/index", methods=["GET", "POST"])
 @login_required
 def index():
     form = AppealTextForm()
