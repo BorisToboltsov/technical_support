@@ -87,10 +87,12 @@ def data():
     application_number = request.args.get('application_number')
     user_fio = request.args.get('user_fio')
     status = request.args.get('status')
+    created_me = request.args.get('created_me')
     user = request.args.get('user')
     datepicker_min = request.args.get('datepicker_min')
     datepicker_max = request.args.get('datepicker_max')
-
+    if created_me:
+        query = query.join(User, onclause=(User.id == UserRequest.user_id)).filter(sa.func.lower(User.name) == current_user.name.lower())
     if status == 'Все':
         pass
     else:

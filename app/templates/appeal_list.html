@@ -38,6 +38,10 @@
                 </div>
                 {{ status_form.select(class="form-select", id="status") }}
             </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="created_me">
+                <label class="form-check-label" for="created_me">Созданные мной</label>
+            </div>
             <div>
                 <div class="card-header">
                     {{ user_form.select.label }}
@@ -125,6 +129,7 @@
                 info: "Показано с _START_ по _END_ (Всего _TOTAL_ записей)",
                 infoFiltered: "",
                 infoEmpty: "Записей нет",
+                processing: "Загрузка данных...",
                 paginate: {
                     previous: "Назад",
                     next: "Вперед",
@@ -150,6 +155,7 @@
                     d.user_number = $('#user_number').val();
                     d.user_fio = $('#user_fio').val();
                     d.status = $('#status').val();
+                    d.created_me = $('#created_me:checked').val();
                     d.user = $('#user').val();
                     d.datepicker_min = $('#datepicker_min').val();
                     d.datepicker_max = $('#datepicker_max').val();
@@ -201,6 +207,7 @@
             var user_number = $('#user_number').val();
             var user_fio = $('#user_fio').val();
             var status = $('#status').val();
+            var created_me = $('#created_me:checked').val();
             var user = $('#user').val();
             var datepicker_min = $('#datepicker_min').val();
             var datepicker_max = $('#datepicker_max').val();
@@ -241,6 +248,10 @@
             );
         });
 
+        $('#created_me,#user,#status').on('change', function () {
+            $("#user-filter-btn").click();
+        });
+
         // Click row
         $('#data').on("click", "td", function (e) {
             var rowIdx = table.row(this).index();
@@ -257,8 +268,6 @@
                 $("#user-filter-btn").click();
             }
         });
-
-
     });
 </script>
 {% endblock %}
