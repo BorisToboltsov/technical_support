@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% block create_request %}
+<div class="container">
+    <p class="success">Обращение принято!</p>
+</div>
+<style>
+    .container{
+	display: grid;
+}
+.success{
+	justify-self: center;
+	align-self: center;
+    font-size: 40px;
+}
+</style>
+{% endblock %}

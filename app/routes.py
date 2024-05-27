@@ -319,6 +319,6 @@ def index():
 
         db.session.add(appeal)
         db.session.commit()
-        return redirect("/index")
-    return render_template("index.html",
+        return render_template("accept_request.html")
+    return render_template("create_request.html",
                            form=form,)

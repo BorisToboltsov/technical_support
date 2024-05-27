@@ -6,23 +6,7 @@
             <img class="img-responsive" src="{{ url_for('static', filename='main_image.jpg') }}"/>
         </div>
         <div class="col-60">
-
-            <form action="" method="POST">
-                {{ form.csrf_token }}
-                <div class="mb-3">
-                    <label for="select_branch" class="form-label">{{ form.select.label }}</label>
-                    {{ form.select(class="form-select",id="select_branch") }}
-                </div>
-                <div class="mb-3">
-                    <label for="cabinet_number" class="form-label">{{ form.cabinet_number.label }}</label>
-                    {{ form.cabinet_number(class="form-control",id="cabinet_number") }}
-                </div>
-                <div class="mb-3">
-                    {{ form.post.label }}
-                    {{ form.post(class='form-control', cols=32, rows=4) }}<br>
-                </div>
-                <p>{{ form.add(class="btn btn-primary") }}</p>
-            </form>
+            {% block create_request %}{% endblock %}
         </div>
     </div>
 </div>
