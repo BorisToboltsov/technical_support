@@ -306,7 +306,7 @@ def index():
     if form.validate_on_submit() and form.post.data:
         query = sa.select(Status).where(sa.func.lower(Status.name) == "Новое".lower())
         status = db.session.execute(query).one()[0]
-        appeal = UserRequest(
+        user_request = UserRequest(
             text=form.post.data,
             user=current_user,
             status=status,
@@ -319,9 +319,15 @@ def index():
         for branch in obj_list:
             if branch.name == form.select.data:
                 new_branch = branch
-        appeal.branch = new_branch
+        user_request.branch = new_branch
+        db.session.add(user_request)
+        db.session.flush()
 
-        db.session.add(appeal)
+        request_user_history = UserRequestHistory(executor=None,
+                                                  status=status,
+                                                  user_request=user_request)
+        db.session.add(request_user_history)
+
         db.session.commit()
         return render_template("accept_request.html")
     return render_template("create_request.html",
