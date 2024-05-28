@@ -103,8 +103,10 @@ def data():
     if user == 'Все':
         pass
     else:
-        query = query.join(User, onclause=(User.id == UserRequest.executor_id)).filter(sa.func.lower(User.name) == user.lower())
-
+        if status:
+            query = query.filter(UserRequest.executor.has(name=user))
+        else:
+            query = query.join(User, onclause=(User.id == UserRequest.executor_id)).filter(sa.func.lower(User.name) == user.lower())
     if application_number:
         try:
             query = query.filter(UserRequest.id == int(application_number))
