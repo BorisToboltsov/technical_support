@@ -3,11 +3,17 @@
 <div class="container">
     <br>
     <div class="d-flex justify-content-left">
-        <div class="row">
+        <div class="stat-container">
             {% for status in total_status_list %}
-            <div class="col-md-2">{{ status.get('status').name }}: {{ status.get('total') }}</div>
+            <div class="block">
+                <div class="text">{{ status.get('status').name }}</div>
+                <div class="number">{{ status.get('total') }}</div>
+            </div>
             {% endfor %}
-            <div class="col-md-2">Всего: {{ total_customer_request }}</div>
+            <div class="block" id="stat-all">
+                <div class="text">Всего</div>
+                <div class="number">{{ total_user_request }}</div>
+            </div>
         </div>
     </div>
     <hr>
@@ -28,8 +34,33 @@
     </div>
 </div>
 <style>
-    .row {
+    /*.row {*/
+    /*    display: flex;*/
+    /*}*/
+
+
+    .stat-container {
         display: flex;
+    }
+
+    .block {
+        width: 100px;
+        text-align: center;
+        border-left: grey;
+        border-left-style: solid;
+    }
+
+    #stat-all {
+        border-right: grey;
+        border-right-style: solid;
+    }
+
+    .text {
+        margin-top: 10px;
+    }
+
+    .number {
+        margin-bottom: 10px;
     }
 
     #middle-line {
