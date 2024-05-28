@@ -270,7 +270,7 @@ def appeal_handler(appeal_id):
         )
         db.session.add(post)
         db.session.commit()
-        return redirect(f"/appeal/id={appeal_id}")
+        return redirect(f"/technical/appeal/id={appeal_id}")
 
     query = Comment.query
     comments = query.filter(Comment.user_request.has(id=appeal.id)).order_by(
