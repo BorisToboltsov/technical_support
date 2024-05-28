@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="/technical")
 app.config.from_object(Config)
 login = LoginManager(app)
 db = SQLAlchemy(app)
