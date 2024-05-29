@@ -30,6 +30,17 @@ def login():
     name = parameters_dict.get("name")
     telegram_id = parameters_dict.get("telegram_id")
     access = parameters_dict.get("access")
+    phone = parameters_dict.get("phone")
+    is_edited = True if parameters_dict.get("is_edited") == "1" else False
+
+    try:
+        telegram_id = int(telegram_id)
+        phone = int(phone)
+        is_edited = int(is_edited)
+    except ValueError:
+        telegram_id = 0
+        phone = 0
+        is_edited = 0
 
     if access == "0":
         return render_template("403.html"), 403
@@ -40,8 +51,15 @@ def login():
     query = sa.select(User).where(User.user_id == user_id)
     try:
         user = db.session.execute(query).one()[0]
+        if user.is_edited != int(is_edited) or user.phone != int(phone) or user.telegram_id != int(telegram_id) or user.name != name:
+            user.is_edited = int(is_edited)
+            user.phone = int(phone)
+            user.telegram_id = telegram_id
+            user.name = name
+            db.session.add(user)
+            db.session.commit()
     except NoResultFound:
-        user = User(user_id=user_id, name=name, telegram_id=telegram_id)
+        user = User(user_id=user_id, name=name, telegram_id=telegram_id, phone=phone, is_edited=is_edited)
         db.session.add(user)
         db.session.commit()
 
