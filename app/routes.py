@@ -278,7 +278,7 @@ def appeal_handler(appeal_id):
         db.session.add(history)
 
         db.session.commit()
-        return redirect(f"/appeal/id={appeal_id}")
+        return redirect(f"/technical/appeal/id={appeal_id}")
     status_form.process()
 
     form = PostForm()
