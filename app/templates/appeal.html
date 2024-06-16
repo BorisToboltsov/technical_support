@@ -3,8 +3,8 @@
 {% block content %}
 <div class="container">
     <br>
-    <div class="row">
-        <div class="col-sm-3">
+    <div class="row card-row">
+        <div class="col-sm-3 card-appeal">
             <div class="card-header">
                 Номер заявки: {{ appeal.id }}
             </div>
@@ -46,7 +46,7 @@
                 {% endif %}
             </form>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-3 card-appeal">
             <div class="card-header">
                 Тема обращения: {{ appeal.theme if appeal.theme else 'Не указана' }}
             </div>
@@ -55,7 +55,7 @@
                 <p class="card-text">{{ appeal.text }}</p>
             </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-3 card-appeal">
             <div class="card-header">
                 Комментарии:
             </div>
@@ -87,7 +87,7 @@
             {% endfor %}
 
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-3 card-appeal">
             <div class="card-header">
                 История изменений:
             </div>
