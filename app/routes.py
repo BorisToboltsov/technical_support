@@ -85,7 +85,7 @@ def appeal_list():
     status_form.select.default = 'Новое'
     status_form.process()
 
-    obj_user_list = User.query.all()
+    obj_user_list = User.query.filter(User.is_edited == True)
     user_list = [user.name for user in obj_user_list]
 
     user_list.append('Все')
