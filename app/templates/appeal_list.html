@@ -41,6 +41,12 @@
                 </div>
                 {{ status_form.select(class="form-select", id="status") }}
             </div>
+            <div>
+                <div class="card-header">
+                    {{ theme_form.select.label }}
+                </div>
+                {{ theme_form.select(class="form-select", id="theme") }}
+            </div>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="created_me">
                 <label class="form-check-label" for="created_me">Созданные мной</label>

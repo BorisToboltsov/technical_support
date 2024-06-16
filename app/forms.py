@@ -33,6 +33,13 @@ class SelectStatusForm(FlaskForm):
         self.select.choices = select_list
 
 
+class SelectThemeForm(FlaskForm):
+    select = SelectField("Выбор темы", choices=[])
+
+    def set_choices(self, select_list):
+        self.select.choices = select_list
+
+
 class SelectUserForm(FlaskForm):
     select = SelectField("Выбор исполнителя", choices=[])
 

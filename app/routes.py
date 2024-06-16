@@ -7,7 +7,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import NoResultFound
 
 from app import app, db
-from app.forms import SelectUserForm, SelectStatusForm, PostForm, AppealTextForm
+from app.forms import SelectUserForm, SelectStatusForm, PostForm, AppealTextForm, SelectThemeForm
 from app.models import User, Status, UserRequest, UserRequestHistory, Comment, Branch, Theme
 
 
@@ -94,9 +94,18 @@ def appeal_list():
     user_form.select.default = 'Все'
     user_form.process()
 
+    obj_theme_list = Theme.query.all()
+    theme_list = [status.name for status in obj_theme_list]
+    theme_list.append('Все')
+    theme_form = SelectThemeForm()
+    theme_form.set_choices(theme_list)
+    theme_form.select.default = 'Все'
+    theme_form.process()
+
     return render_template("appeal_list.html", title="Техническая поддержка",
                            status_form=status_form,
-                           user_form=user_form)
+                           user_form=user_form,
+                           theme_form=theme_form)
 
 
 @app.route("/technical/api/data")
@@ -108,6 +117,7 @@ def data():
     application_number = request.args.get('application_number')
     user_fio = request.args.get('user_fio')
     status = request.args.get('status')
+    theme = request.args.get('theme')
     created_me = request.args.get('created_me')
     user = request.args.get('user')
     datepicker_min = request.args.get('datepicker_min')
@@ -118,6 +128,10 @@ def data():
         pass
     else:
         query = query.join(Status).filter(sa.func.lower(Status.name) == status.lower())
+    if theme == 'Все':
+        pass
+    else:
+        query = query.join(Theme).filter(sa.func.lower(Theme.name) == theme.lower())
     if user == 'Все':
         pass
     else:
