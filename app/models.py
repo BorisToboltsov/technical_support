@@ -96,6 +96,7 @@ class UserRequest(db.Model):
             "executor_name": executor_name,
             "theme": self.theme,
             "fio": self.user.name,
+            "text": self.text,
         }
 
     def __repr__(self):

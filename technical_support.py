@@ -9,5 +9,5 @@ from app import app, db
 
 # from rabbitmq.callback import handler_rabbitmq
 
-sentry_sdk.init(os.getenv("API_TOKEN_SENTRY"))
+# sentry_sdk.init(os.getenv("API_TOKEN_SENTRY"))
 # reabbitmq = threading.Thread(target=handler_rabbitmq).start()
