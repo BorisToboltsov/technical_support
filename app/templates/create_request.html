@@ -11,6 +11,10 @@
         {{ form.cabinet_number(class="form-control",id="cabinet_number") }}
     </div>
     <div class="mb-3">
+        <label for="select_branch" class="form-label">{{ form.select_theme.label }}</label>
+        {{ form.select_theme(class="form-select",id="select_branch") }}
+    </div>
+    <div class="mb-3">
         {{ form.post.label }}
         {{ form.post(class='form-control', cols=32, rows=4) }}<br>
     </div>

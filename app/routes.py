@@ -8,7 +8,7 @@ from sqlalchemy.exc import NoResultFound
 
 from app import app, db
 from app.forms import SelectUserForm, SelectStatusForm, PostForm, AppealTextForm
-from app.models import User, Status, UserRequest, UserRequestHistory, Comment, Branch
+from app.models import User, Status, UserRequest, UserRequestHistory, Comment, Branch, Theme
 
 
 @app.route("/technical/login", methods=["GET", "POST"])
@@ -319,24 +319,34 @@ def appeal_handler(appeal_id):
 @login_required
 def index():
     form = AppealTextForm()
-    obj_list = Branch.query.all()
-    branch_list = [branch.name for branch in obj_list]
+    branch_query = Branch.query.all()
+    branch_list = [branch.name for branch in branch_query]
     form.set_choices(branch_list)
+
+    theme_query = Theme.query.all()
+    theme_list = [theme.name for theme in theme_query]
+    form.set_choices_theme(theme_list)
 
     if form.validate_on_submit() and form.post.data:
         query = sa.select(Status).where(sa.func.lower(Status.name) == "Новое".lower())
         status = db.session.execute(query).one()[0]
+
         user_request = UserRequest(
             text=form.post.data,
             user=current_user,
             status=status,
             cabinet_number=form.cabinet_number.data,
             channel='Сайт',
-            theme='Обращение'
         )
 
+        new_theme = None
+        for theme in theme_query:
+            if theme.name == form.select_theme.data:
+                new_theme = theme
+        user_request.theme = new_theme
+
         new_branch = None
-        for branch in obj_list:
+        for branch in branch_query:
             if branch.name == form.select.data:
                 new_branch = branch
         user_request.branch = new_branch
