@@ -46,7 +46,11 @@ class AppealTextForm(FlaskForm):
         "Текст обращения", validators=[DataRequired(), Length(min=1, max=500)]
     )
     cabinet_number = IntegerField("№ кабинета", validators=[DataRequired(), NumberRange(min=1, max=2000)])
+    select_theme = SelectField("Выбор темы обращения", choices=[])
     add = SubmitField("Добавить")
 
     def set_choices(self, select_list):
         self.select.choices = select_list
+
+    def set_choices_theme(self, select_list):
+        self.select_theme.choices = select_list
