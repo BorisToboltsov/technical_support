@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/statistics.css') }}"/>
 <div class="container">
     <br>
     <div class="d-flex justify-content-left">
@@ -33,84 +34,6 @@
         </div>
     </div>
 </div>
-<style>
-    /*.row {*/
-    /*    display: flex;*/
-    /*}*/
 
-
-    .stat-container {
-        display: flex;
-    }
-
-    .block {
-        width: 100px;
-        text-align: center;
-        border-left: grey;
-        border-left-style: solid;
-    }
-
-    #stat-all {
-        border-right: grey;
-        border-right-style: solid;
-    }
-
-    .text {
-        margin-top: 10px;
-    }
-
-    .number {
-        margin-bottom: 10px;
-    }
-
-    #middle-line {
-        margin-top: 10px;
-    }
-
-    .col-80 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-
-</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
-<script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
-<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-<script>
-    $(document).ready(function () {
-        // Create Table
-        var table = $('#statistic-table').DataTable({
-            searching: false,
-            pageLength: 10,
-            language: {
-                emptyTable: "Нет данных для отображения",
-                zeroRecords: "Нет подходящих записей",
-                search: "Поиск:",
-                lengthMenu: "Показать _MENU_ записей",
-                info: "Показано с _START_ по _END_ (Всего _TOTAL_ записей)",
-                infoFiltered: "",
-                infoEmpty: "Записей нет",
-                paginate: {
-                    previous: "Назад",
-                    next: "Вперед",
-                },
-            },
-            ajax: '/technical/api/statistics',
-            serverSide: true,
-            processing: true,
-            columns: [
-                {data: 'fio', orderable: false, searchable: false},
-                {data: 'Новое', orderable: false, defaultContent: 0},
-                {data: 'В работе', orderable: false, defaultContent: 0},
-                {data: 'Отложено', orderable: false, defaultContent: 0},
-                {data: 'Завершено', orderable: false, defaultContent: 0},
-            ],
-        });
-        table.draw();
-    });
-</script>
+<script src="{{url_for('static', filename='javascript/statistics.js')}}"></script>
 {% endblock %}
