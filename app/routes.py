@@ -339,7 +339,8 @@ def index():
 
     theme_query = Theme.query.all()
     theme_list = [theme.name for theme in theme_query]
-    form.set_choices_theme(theme_list)
+    theme_list_sort = sorted(theme_list, key=len, reverse=True)
+    form.set_choices_theme(theme_list_sort)
 
     if form.validate_on_submit() and form.post.data:
         query = sa.select(Status).where(sa.func.lower(Status.name) == "Новое".lower())
