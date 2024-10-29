@@ -9,6 +9,7 @@ from sqlalchemy.exc import NoResultFound
 from app import app, db
 from app.forms import SelectUserForm, SelectStatusForm, PostForm, AppealTextForm, SelectThemeForm
 from app.models import User, Status, UserRequest, UserRequestHistory, Comment, Branch, Theme
+from openproject.database.work_packages import ApiWorkPackages
 
 
 @app.route("/technical/login", methods=["GET", "POST"])
@@ -374,6 +375,19 @@ def index():
         db.session.add(request_user_history)
 
         db.session.commit()
+
+        if user_request.theme.name != 'Компьютер/Принтер/ПО':
+            description = f"""ФИО: {current_user.name}
+Телефон: {current_user.phone}
+Филиал: {user_request.branch.name}
+Кабинет: {user_request.cabinet_number}
+
+Тема: {user_request.theme.name}
+Описание: {user_request.text}"""
+
+
+            work_packages = ApiWorkPackages()
+            work_packages.save_work_packages(user_request.theme.name, description)
         return render_template("accept_request.html")
     return render_template("create_request.html",
                            form=form,)
