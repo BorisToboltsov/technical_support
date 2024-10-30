@@ -366,15 +366,7 @@ def index():
             if branch.name == form.select.data:
                 new_branch = branch
         user_request.branch = new_branch
-        db.session.add(user_request)
-        db.session.flush()
 
-        request_user_history = UserRequestHistory(executor=None,
-                                                  status=status,
-                                                  user_request=user_request)
-        db.session.add(request_user_history)
-
-        db.session.commit()
 
         if user_request.theme.name != 'Компьютер/Принтер/ПО':
             description = f"""ФИО: {current_user.name}
@@ -385,9 +377,22 @@ def index():
 Тема: {user_request.theme.name}
 Описание: {user_request.text}"""
 
-
             work_packages = ApiWorkPackages()
             work_packages.save_work_packages(user_request.theme.name, description)
+
+            query = sa.select(Status).where(sa.func.lower(Status.name) == "Передано в OP".lower())
+            status = db.session.execute(query).one()[0]
+            user_request.status = status
+
+        db.session.add(user_request)
+        db.session.flush()
+
+        request_user_history = UserRequestHistory(executor=None,
+                                                  status=status,
+                                                  user_request=user_request)
+        db.session.add(request_user_history)
+
+        db.session.commit()
         return render_template("accept_request.html")
     return render_template("create_request.html",
                            form=form,)
