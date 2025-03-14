@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
     comment: so.WriteOnlyMapped["Comment"] = so.relationship(back_populates="executor")
 
     def __repr__(self):
-        return "<{}>".format(self.name)
+        return self.name
 
 
 class Status(db.Model):
@@ -45,7 +45,7 @@ class Status(db.Model):
     user_request_history: so.WriteOnlyMapped["UserRequestHistory"] = so.relationship(back_populates="status")
 
     def __repr__(self):
-        return "<{}>".format(self.name)
+        return self.name
 
 
 class Branch(db.Model):
@@ -58,7 +58,7 @@ class Branch(db.Model):
     )
 
     def __repr__(self):
-        return "<{}>".format(self.name)
+        return self.name
 
 
 class Theme(db.Model):
@@ -71,7 +71,7 @@ class Theme(db.Model):
     )
 
     def __repr__(self):
-        return "<{}>".format(self.name)
+        return self.name
 
 
 class UserRequest(db.Model):
@@ -114,7 +114,7 @@ class UserRequest(db.Model):
         }
 
     def __repr__(self):
-        return "<{}>".format(self.text)
+        return self.name
 
 
 class Comment(db.Model):
@@ -127,7 +127,7 @@ class Comment(db.Model):
     user_request: so.Mapped[UserRequest] = so.relationship(back_populates="comment")
 
     def __repr__(self):
-        return "<{}>".format(self.executor)
+        return self.name
 
 
 class UserRequestHistory(db.Model):
@@ -141,4 +141,4 @@ class UserRequestHistory(db.Model):
     status: so.Mapped[Status] = so.relationship(back_populates="user_request_history")
 
     def __repr__(self):
-        return "<{}>".format(self.status_id)
+        return self.name
