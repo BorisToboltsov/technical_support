@@ -125,7 +125,7 @@ def data():
     user = request.args.get('user')
     datepicker_min = request.args.get('datepicker_min')
     datepicker_max = request.args.get('datepicker_max')
-    if created_me:
+    if created_me == 'true':
         query = query.join(User, onclause=(User.id == UserRequest.user_id)).filter(sa.func.lower(User.name) == current_user.name.lower())
     if status == 'Все':
         pass
