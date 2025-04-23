@@ -1,4 +1,5 @@
 import base64
+import os
 from datetime import datetime
 
 import sqlalchemy as sa
@@ -8,6 +9,7 @@ from sqlalchemy.exc import NoResultFound
 
 from app import app, db
 from app.forms import SelectUserForm, SelectStatusForm, PostForm, AppealTextForm, SelectThemeForm
+from app.mail import send_email
 from app.models import User, Status, UserRequest, UserRequestHistory, Comment, Branch, Theme
 from openproject.database.work_packages import ApiWorkPackages
 
@@ -123,7 +125,7 @@ def data():
     user = request.args.get('user')
     datepicker_min = request.args.get('datepicker_min')
     datepicker_max = request.args.get('datepicker_max')
-    if created_me:
+    if created_me == 'true':
         query = query.join(User, onclause=(User.id == UserRequest.user_id)).filter(sa.func.lower(User.name) == current_user.name.lower())
     if status == 'Все':
         pass
@@ -367,9 +369,7 @@ def index():
                 new_branch = branch
         user_request.branch = new_branch
 
-
-        if user_request.theme.name != 'Компьютер/Принтер/ПО':
-            description = f"""ФИО: {current_user.name}
+        description = f"""ФИО: {current_user.name}
 Телефон: {current_user.phone}
 Филиал: {user_request.branch.name}
 Кабинет: {user_request.cabinet_number}
@@ -377,15 +377,22 @@ def index():
 Тема: {user_request.theme.name}
 Описание: {user_request.text}"""
 
-            work_packages = ApiWorkPackages()
-            work_packages.save_work_packages(user_request.theme.name, description)
-
+        # Change status
+        if user_request.theme.name != 'Компьютер/Принтер/ПО' and user_request.theme.name != 'Юридический отдел':
             query = sa.select(Status).where(sa.func.lower(Status.name) == "Передано в OP".lower())
             status = db.session.execute(query).one()[0]
             user_request.status = status
 
         db.session.add(user_request)
         db.session.flush()
+
+        # Send notification
+        description = f'Номер заявки: {user_request.id}\n{description}'
+        if user_request.theme.name != 'Компьютер/Принтер/ПО' and user_request.theme.name != 'Юридический отдел':
+            work_packages = ApiWorkPackages()
+            work_packages.save_work_packages(user_request.theme.name, description)
+        elif user_request.theme.name == 'Компьютер/Принтер/ПО':
+            send_email(f'№{user_request.id} заявка в техподдержку, Золотая пора.', [os.environ.get("RECIPIENT")], description)
 
         request_user_history = UserRequestHistory(executor=None,
                                                   status=status,
