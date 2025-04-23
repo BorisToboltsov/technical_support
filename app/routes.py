@@ -377,18 +377,22 @@ def index():
 Тема: {user_request.theme.name}
 Описание: {user_request.text}"""
 
-        if user_request.theme.name != 'Компьютер/Принтер/ПО':
-            work_packages = ApiWorkPackages()
-            work_packages.save_work_packages(user_request.theme.name, description)
-
+        # Change status
+        if user_request.theme.name != 'Компьютер/Принтер/ПО' and user_request.theme.name != 'Юридический отдел':
             query = sa.select(Status).where(sa.func.lower(Status.name) == "Передано в OP".lower())
             status = db.session.execute(query).one()[0]
             user_request.status = status
-        elif user_request.theme.name == 'Компьютер/Принтер/ПО':
-            send_email('Золотая пора, заявка в техподдержку.', [os.environ.get("RECIPIENT")], description)
 
         db.session.add(user_request)
         db.session.flush()
+
+        # Send notification
+        description = f'Номер заявки: {user_request.id}\n{description}'
+        if user_request.theme.name != 'Компьютер/Принтер/ПО' and user_request.theme.name != 'Юридический отдел':
+            work_packages = ApiWorkPackages()
+            work_packages.save_work_packages(user_request.theme.name, description)
+        elif user_request.theme.name == 'Компьютер/Принтер/ПО':
+            send_email('Золотая пора, заявка в техподдержку.', [os.environ.get("RECIPIENT")], description)
 
         request_user_history = UserRequestHistory(executor=None,
                                                   status=status,
