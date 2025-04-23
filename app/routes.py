@@ -392,7 +392,7 @@ def index():
             work_packages = ApiWorkPackages()
             work_packages.save_work_packages(user_request.theme.name, description)
         elif user_request.theme.name == 'Компьютер/Принтер/ПО':
-            send_email('Золотая пора, заявка в техподдержку.', [os.environ.get("RECIPIENT")], description)
+            send_email(f'№{user_request.id} заявка в техподдержку, Золотая пора.', [os.environ.get("RECIPIENT")], description)
 
         request_user_history = UserRequestHistory(executor=None,
                                                   status=status,
