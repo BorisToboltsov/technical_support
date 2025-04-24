@@ -387,7 +387,7 @@ def index():
         db.session.flush()
 
         # Send notification
-        description = f'Номер заявки: {user_request.id}\n{description}'
+        description = f'Номер заявки: {user_request.id}\n{description}\nСсылка: http://services.sp-zp.ru/technical/appeal/id={user_request.id}'
         if user_request.theme.name != 'Компьютер/Принтер/ПО' and user_request.theme.name != 'Юридический отдел':
             work_packages = ApiWorkPackages()
             work_packages.save_work_packages(user_request.theme.name, description)
